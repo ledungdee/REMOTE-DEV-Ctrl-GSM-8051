@@ -1,0 +1,40 @@
+Removed Pin From Net: NetName=D7 Pin=IC2-2
+Removed Pin From Net: NetName=D6 Pin=IC2-3
+Removed Pin From Net: NetName=D5 Pin=IC2-4
+Removed Pin From Net: NetName=RW Pin=IC2-7
+Removed Pin From Net: NetName=RS Pin=IC2-8
+Removed Pin From Net: NetName=RS Pin=JP2-2
+Removed Pin From Net: NetName=RW Pin=JP2-3
+Removed Pin From Net: NetName=D5 Pin=JP2-6
+Removed Pin From Net: NetName=D6 Pin=JP2-7
+Removed Pin From Net: NetName=D7 Pin=JP2-8
+Removed Pin From Net: NetName=NetLCD1_15 Pin=R5-1
+Removed Pin From Net: NetName=5V Pin=R5-2
+Removed Pin From Net: NetName=5V Pin=VR1-1
+Removed Pin From Net: NetName=GND Pin=VR1-3
+Change Component Footprint: Designator=LCD1 Old Footprint=JP16-C1T New Footprint=LCD1602 with Jump
+Change Component Comment : Designator=LCD1 Old Comment=LCD 16x2A New Comment=LCD1602 XL
+Change component parameters: Designator = "LCD1" ("LCD1"); Footprint = "JP16-C1T"; UniqueID = "\NWMEQRZN" ("\NWMEQRZN")
+Change component parameters (AddParameter): Name = "CHIP"; Value = "HD44780"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Ma_Hang"; Value = "67HZ"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "NCC"; Value = "NSHOP"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Ten"; Value = "Màn hình LCD 1602 Xanh Lá"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=RS Pin=IC2-2
+Added Pin To Net: NetName=RW Pin=IC2-3
+Added Pin To Net: NetName=D5 Pin=IC2-6
+Added Pin To Net: NetName=D6 Pin=IC2-7
+Added Pin To Net: NetName=D7 Pin=IC2-8
+Added Pin To Net: NetName=D7 Pin=JP2-2
+Added Pin To Net: NetName=D6 Pin=JP2-3
+Added Pin To Net: NetName=D5 Pin=JP2-4
+Added Pin To Net: NetName=RW Pin=JP2-7
+Added Pin To Net: NetName=RS Pin=JP2-8
+Added Pin To Net: NetName=5V Pin=R5-1
+Added Pin To Net: NetName=NetLCD1_15 Pin=R5-2
+Added Pin To Net: NetName=GND Pin=VR1-1
+Added Pin To Net: NetName=5V Pin=VR1-3
+Added Pin To Net: NetName=EN Pin=IC2-4
+Added Pin To Net: NetName=EN Pin=JP2-6
+Added Pin To Net: NetName=EN Pin=LCD1-6
+Added Net: Name=EN
+Added Room: Name=SCH

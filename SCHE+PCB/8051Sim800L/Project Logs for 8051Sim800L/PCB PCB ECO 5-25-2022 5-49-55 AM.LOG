@@ -1,0 +1,11 @@
+Removed Pin From Net: NetName=RS Pin=IC2-2
+Removed Pin From Net: NetName=EN Pin=IC2-4
+Removed Pin From Net: NetName=EN Pin=JP2-6
+Removed Pin From Net: NetName=RS Pin=JP2-8
+Change Component Comment : Designator=R7 Old Comment=470 New Comment=4.7K
+Change Component Comment : Designator=R9 Old Comment=470 New Comment=4.7K
+Added Pin To Net: NetName=EN Pin=IC2-2
+Added Pin To Net: NetName=RS Pin=IC2-4
+Added Pin To Net: NetName=RS Pin=JP2-6
+Added Pin To Net: NetName=EN Pin=JP2-8
+Added Room: Name=SCH

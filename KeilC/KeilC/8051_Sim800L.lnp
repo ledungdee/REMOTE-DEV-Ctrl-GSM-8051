@@ -1,0 +1,4 @@
+"main.obj",
+"uartmode1.obj" 
+TO "8051_Sim800L" 
+RAMSIZE(256) 

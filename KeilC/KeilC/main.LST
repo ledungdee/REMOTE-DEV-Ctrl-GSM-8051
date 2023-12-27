@@ -1,0 +1,239 @@
+C51 COMPILER V9.01   MAIN                                                                  12/30/2021 01:16:56 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include"main.h"
+   2          #include"uartmode1.h"
+   3          #include <stdio.h>
+   4          #include <string.h>
+   5          #include <stdlib.h>
+   6          
+   7          sbit relay1 = P2^1;                                       // Relay 1: Chan P2_1
+   8          sbit relay2 = P2^0;                                       // Relay 2: Chan P2_0
+   9          
+  10          void delay_ms(unsigned int time);                               
+  11          void gsm_Init();
+  12          void send_sms(unsigned char *sms);
+  13          void hang_call();
+  14          //void delete_all_msg();
+  15          void extract_sms();
+  16          void do_action();
+  17          
+  18          idata char buff[100];                                   // Bo nho dem buff, Luu bien vung idata
+  19          char status_flag = 0;                                   // Co bao nhan Uart
+  20          volatile int pointer;                                   // Bien Volatile: co the thay doi ma khong bao trc                                                                                      
+  21                                                                                          // Bien toan cuc dc truy xuat tu ct con xu ly ngat (ISR)
+  22          char *control_number = "+84967992298";  // Sdt dieu khien
+  23          idata char number[15];                                  // Bien luu sdt tach ra tu tin nhan
+  24          //idata char nd[15];                                    // Bien luu noi dung tach ra tu tin nhan
+  25          
+  26          void main()
+  27          {
+  28   1              relay1 = relay2 = 0;
+  29   1              pointer = 0;
+  30   1              uart_Init(); 
+  31   1              Ext_int_Init();
+  32   1              gsm_Init();
+  33   1              while(1)
+  34   1              {
+  35   2                      if(status_flag==1)
+  36   2                      {
+  37   3                              delay_ms(500);
+  38   3                              if(strstr(buff,"+CMT"))
+  39   3                              {
+  40   4                                      extract_sms();
+  41   4                                      delay_ms(300);
+  42   4                                      if(strstr(number,control_number)!=0)
+  43   4                                      {
+  44   5                                              do_action();
+  45   5                                      }
+  46   4                              
+  47   4                              }
+  48   3                              if(strstr(buff,"RING"))         // Chuoi con khac null => Co RING       
+  49   3                              {
+  50   4                                      hang_call();
+  51   4                              }
+  52   3                              //delete_all_msg();
+  53   3                              
+  54   3                              pointer=0;
+  55   3                              status_flag=0;
+C51 COMPILER V9.01   MAIN                                                                  12/30/2021 01:16:56 PAGE 2   
+
+  56   3                              memset(buff,0,strlen(buff));
+  57   3                      //memset(nd,0,strlen(nd));
+  58   3                              memset(number,0,strlen(number));
+  59   3                      }                                               
+  60   2              }
+  61   1      }
+  62          void extract_sms()
+  63          {
+  64   1              int i=0;
+  65   1              pointer=0;
+  66   1              while(1)
+  67   1              {
+  68   2                      if(buff[pointer]=='\r'||buff[pointer]=='\n')    // Loai bo \n \r truoc chuoi buffer luu gia tri nhan uart
+  69   2                      {
+  70   3                              pointer++;
+  71   3                      }
+  72   2                      else
+  73   2                              break;                              // +CMT: "+84967992298","","21/12/28,01:35:03+28"
+  74   2                                                                                                      // Bat1
+  75   2              }
+  76   1                                                                                                      // Phan hoi tu sim co dang:
+  77   1              while(buff[pointer]!='"')                                       // +CMT: "+84967992298","","DD/MM/YY,gio:phut:giay+tichtac" \n
+  78   1              {                                                                                       // . NoiDungTinNhan
+  79   2                      pointer++;
+  80   2              }
+  81   1              pointer=pointer+1;                                                      // i<12 : sdd 10 so, i<=12: 11 so
+  82   1              for(i=0;i<12;i++)
+  83   1              {
+  84   2                      number[i]=buff[pointer];
+  85   2                      pointer++;
+  86   2              }
+  87   1              pointer =0;                                                                         
+  88   1              while(buff[pointer]!='\n')      //**********************************
+  89   1              {                               
+  90   2                      pointer++;        
+  91   2              }                                                               //      #CR#LF+CMT: "+84967992298","","21/12/28,23:57:16+28"#CR#LFtat1#CR#LF
+  92   1              pointer=pointer+1;
+  93   1              
+  94   1              //send_char(buff[pointer]);
+  95   1              //send_char(buff[pointer+1]);   
+  96   1              //send_char(buff[pointer+2]);
+  97   1              //send_char(buff[pointer+3]);
+  98   1              //noidung[0] = buff[pointer];
+  99   1              //noidung[1] = buff[pointer+1];
+ 100   1              //noidung[2] = buff[pointer+2];
+ 101   1              //noidung[3] = buff[pointer+3];
+ 102   1      }
+ 103          void delay_ms(unsigned int time)
+ 104          {
+ 105   1              int i,j;
+ 106   1              for(i=0;i<time;i++)
+ 107   1              for(j=0;j<124;j++);                                             // Delay 1ms
+ 108   1      }
+ 109          
+ 110          void gsm_Init()
+ 111          {
+ 112   1        while(1)
+ 113   1              {
+ 114   2                      send_str("ATE0\r\n");                           // Tat echo
+ 115   2                      //send_char(0x0D);                                      // <CR> : Ve dau dong = \r
+ 116   2                      //send_char(0x0A);                              // <LF> : New line        = \n
+ 117   2                      delay_ms(200);
+C51 COMPILER V9.01   MAIN                                                                  12/30/2021 01:16:56 PAGE 3   
+
+ 118   2                              
+ 119   2                      send_str("AT+IPR=9600\r\n");                    // Set baud = 9600
+ 120   2                      delay_ms(200);
+ 121   2              
+ 122   2                      send_str("AT+CMGF=1\r\n");                      // Text mode
+ 123   2                      delay_ms(200);
+ 124   2              
+ 125   2                      send_str("AT+CNMI=2,2,0,0\r\n");        // Hien thi noi dung khi co tin nhan toi
+ 126   2                      delay_ms(200);
+ 127   2                      memset(buff,0,strlen(buff));
+ 128   2                      send_str("AT&W\r\n");                                   // Luu cac thiet lap
+ 129   2                      delay_ms(2000);         
+ 130   2                      
+ 131   2                      if(strstr(buff,"OK"))
+ 132   2                      {
+ 133   3                              send_sms("Da Khoi Dong Thanh Cong\n\r");
+ 134   3                              break;
+ 135   3                      }                       
+ 136   2              }       
+ 137   1      }
+ 138          void send_sms(unsigned char *sms)
+ 139          {
+ 140   1              send_str("AT+CMGS=");
+ 141   1              send_char(0x22);                                // 0x22: "
+ 142   1              send_str(control_number);
+ 143   1              send_char(0x22);                                // 0x22: "
+ 144   1              send_char(0x0D);                        
+ 145   1              send_char(0x0A);
+ 146   1              delay_ms(300);                                  // Doi dau >
+ 147   1              send_str(sms);
+ 148   1              send_char(0x1A);                                // Ctrl + Z de gui tin nhan
+ 149   1              delay_ms(1000);                                 // Delay 1s doi SIM gui tin nhan
+ 150   1              memset(buff,0,strlen(buff));
+ 151   1              pointer = 0;
+ 152   1              status_flag = 0;
+ 153   1      } 
+ 154          /*
+ 155          void delete_all_msg()
+ 156          {
+ 157                  send_str("AT+CMGDA=");
+ 158                  send_char(0x22);
+ 159                  send_str("DEL ALL");
+ 160                  send_char(0x22);
+ 161                  send_char(0x0D);
+ 162                  send_char(0x0A);                                
+ 163          }
+ 164          */ 
+ 165          void hang_call()
+ 166          {
+ 167   1              delay_ms(200);
+ 168   1              send_str("ATH\r\n");
+ 169   1              delay_ms(100);
+ 170   1      }
+ 171          void do_action()
+ 172          {
+ 173   1              if(buff[pointer]=='B'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='1')
+ 174   1              {       
+ 175   2                              relay1=1;
+ 176   2                              send_sms("Da Bat Relay 1\r\n");
+ 177   2              }
+ 178   1              else if(buff[pointer]=='T'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='1')   
+ 179   1              {       
+C51 COMPILER V9.01   MAIN                                                                  12/30/2021 01:16:56 PAGE 4   
+
+ 180   2                              relay1=0;
+ 181   2                              send_sms("Da Tat Relay 1\r\n");
+ 182   2              }       
+ 183   1              else if(buff[pointer]=='B'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='2')
+ 184   1              {       
+ 185   2                              relay2=1;
+ 186   2                              send_sms("Da Bat Relay 2\r\n");
+ 187   2              }       
+ 188   1              else if(buff[pointer]=='T'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='2')
+ 189   1              {
+ 190   2                              relay2=0;
+ 191   2                              send_sms("Da Tat Relay 2\r\n");
+ 192   2              }
+ 193   1              else send_sms("Sai Cu Phap");           
+ 194   1      }
+ 195          /* ISR routine to save responses/new message */
+ 196          
+ 197          //void Serial_ISR() interrupt 4                                 // Ngat khi co RI hoac TI dc bat len
+ 198          
+ 199          void ISR_UART(void) interrupt 4
+ 200          {
+ 201   1              if(RI!=0)                                                                       // Co RI = 1
+ 202   1              {
+ 203   2                      EA = 0;                                                                 // Khong co ngat nao duoc dap ung nua
+ 204   2                      buff[pointer] = SBUF;                                   // Copy SBUF(received value) to buffer 
+ 205   2                      pointer++;                                                              // Tang con tro len
+ 206   2                      status_flag = 1;                                                // Flag for new uart arrival 
+ 207   2                      RI = 0;                                                                 // Set RI = 0 de nhan byte du lieu tiep theo
+ 208   2                      EA = 1;                                                                 // Tat ca moi ngat deu dc bat lai
+ 209   2              }
+ 210   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    840    ----
+   CONSTANT SIZE    =    205    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6       3
+   IDATA SIZE       =    115    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

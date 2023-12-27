@@ -1,0 +1,353 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              06/12/2022 02:02:00 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <main.h>
+   2          #include <uartmode1.h>
+   3          #include <lcd.h>
+   4          #include <stdio.h>
+   5          #include <string.h>
+   6          #include <stdlib.h>
+   7          
+   8          sbit r1 = P2^0;           // Relay 1: Chan P2_0
+   9          sbit r2 = P2^1;           // Relay 2: Chan P2_1
+  10          sbit r3 = P2^2;           // Relay 3: Chan P2_3
+  11                
+  12          void gsm_Init();
+  13          void send_sms(unsigned char *sms);
+  14          void hang_call();
+  15          void rst_state();
+  16          void extract_sms();
+  17          void do_action();
+  18          void nhiet_do();
+  19          idata char buff[100];                   // Bo nho dem buff, Luu bien vung idata
+  20          volatile int status_flag = 0;           // Co bao nhan Uart
+  21          volatile int pointer =0;                // Bien Volatile: co the thay doi ma khong bao trc                      
+  22                                                  // Bien toan cuc dc truy xuat tu ct con xu ly ngat (ISR)
+  23          char *control_number = "+84967992298";  // Sdt dieu khien
+  24          idata char number[15];                  // Bien luu sdt tach ra tu tin nhan
+  25          int nhietdo;
+  26          void main()
+  27          {
+  28   1        r1 = r2 = r3 = 0;                     // Tat het relay
+  29   1        LCD_Init();
+  30   1        delay_ms(20);
+  31   1        LCD_Clear();
+  32   1        LCD_Gotoxy(0,0);
+  33   1        LCD_Puts("Initializing.");
+  34   1        delay_ms(1000);
+  35   1        LCD_Clear();
+  36   1        LCD_Gotoxy(0,0);
+  37   1        LCD_Puts("Initializing..");
+  38   1        delay_ms(1000);
+  39   1        LCD_Clear();
+  40   1        LCD_Gotoxy(0,0);
+  41   1        LCD_Puts("Initializing...");
+  42   1        delay_ms(1000);
+  43   1        uart_Init(); 
+  44   1        Ext_int_Init();
+  45   1        gsm_Init();
+  46   1        while(1)
+  47   1        {
+  48   2            LCD_Clear();
+  49   2            LCD_Gotoxy(0,0);
+  50   2            LCD_Puts("Waiting...");
+  51   2            LCD_Gotoxy(0,1);
+  52   2            LCD_Puts("LEDUNG - 1912950");
+  53   2            if(status_flag==1)
+  54   2            {
+  55   3                delay_ms(500);
+C51 COMPILER V9.60.0.0   MAIN                                                              06/12/2022 02:02:00 PAGE 2   
+
+  56   3                if(strstr(buff,"+CMT"))
+  57   3            {
+  58   4                extract_sms();
+  59   4                if(strstr(number,control_number)!=0)
+  60   4                {
+  61   5                do_action();
+  62   5                }
+  63   4            }
+  64   3            if(strstr(buff,"RING"))     // Chuoi con khac null => Co RING 
+  65   3            {
+  66   4              hang_call();
+  67   4              
+  68   4              // Hien thi hieu ung
+  69   4              LCD_Clear();
+  70   4              LCD_Gotoxy(0,0);
+  71   4              LCD_Puts("Incoming");
+  72   4              delay_ms(100);
+  73   4              LCD_Clear();
+  74   4              LCD_Gotoxy(0,0);
+  75   4              LCD_Puts("Incoming.");
+  76   4              delay_ms(800);
+  77   4              LCD_Clear();
+  78   4              LCD_Gotoxy(0,0);
+  79   4              LCD_Puts("Incoming..");
+  80   4              delay_ms(800);
+  81   4              LCD_Clear();
+  82   4              LCD_Gotoxy(0,0);
+  83   4              LCD_Puts("Incoming...");
+  84   4              delay_ms(500);
+  85   4              LCD_Gotoxy(0,1);
+  86   4              LCD_Puts("Cacelled");
+  87   4              delay_ms(3000);
+  88   4            }
+  89   3          }
+  90   2          nhiet_do();
+  91   2        }
+  92   1      }
+  93          void nhiet_do()
+  94          {
+  95   1            if(nhietdo>=40)
+  96   1            { 
+  97   2                  r3 = 1;
+  98   2                  send_sms("Nhiet Do Cao, Da Tu Dong Bat Quat ");
+  99   2                  LCD_Clear();
+ 100   2                  LCD_Gotoxy(0.0);
+*** WARNING C209 IN LINE 100 OF main.c: '_LCD_Gotoxy': too few actual parameters
+ 101   2                  LCD_Puts(" Qua Nhiet Do!");
+ 102   2                  delay_ms(100);
+ 103   2                  LCD_Clear();
+ 104   2                  LCD_Gotoxy(0,0);
+ 105   2                  LCD_Puts(" Qua Nhiet Do!!");
+ 106   2                  delay_ms(200);
+ 107   2                  LCD_Clear();
+ 108   2                  LCD_Gotoxy(0,0);
+ 109   2                  LCD_Puts(" Qua Nhiet Do!!!"); 
+ 110   2                  delay_ms(2000);
+ 111   2            }
+ 112   1      }
+ 113          void rst_state()
+ 114          {
+ 115   1        memset(buff,0,strlen(buff));
+ 116   1        pointer = 0;
+C51 COMPILER V9.60.0.0   MAIN                                                              06/12/2022 02:02:00 PAGE 3   
+
+ 117   1        status_flag = 0;
+ 118   1      }
+ 119          void gsm_Init()
+ 120          {
+ 121   1          send_str("ATE0\r\n");             // Tat echo
+ 122   1          //send_char(0x0D);                // <CR> : Ve dau dong = \r
+ 123   1          //send_char(0x0A);                // <LF> : New line    = \n
+ 124   1          delay_ms(200);
+ 125   1            
+ 126   1          send_str("AT+IPR=9600\r\n");      // Set baud = 9600
+ 127   1          delay_ms(200);
+ 128   1        
+ 129   1          send_str("AT+CMGF=1\r\n");        // Text mode
+ 130   1          delay_ms(200);
+ 131   1        
+ 132   1          send_str("AT+CNMI=2,2,0,0\r\n");  // Hien thi noi dung khi co tin nhan toi
+ 133   1          delay_ms(200);
+ 134   1          //memset(buff,0,strlen(buff));
+ 135   1          send_str("AT&W\r\n");             // Luu cac thiet lap
+ 136   1          delay_ms(2000);   
+ 137   1          
+ 138   1          //if(strstr(buff,"OK"))
+ 139   1          send_sms("Da Khoi Dong Thanh Cong\n\r");
+ 140   1          LCD_Clear();
+ 141   1          LCD_Gotoxy(0,0);
+ 142   1          LCD_Puts("Ready...");
+ 143   1          delay_ms(2000);
+ 144   1      }
+ 145          void send_sms(unsigned char *sms)
+ 146          {
+ 147   1        send_str("AT+CMGS=");
+ 148   1        send_char(0x22);        // 0x22: "
+ 149   1        send_str(control_number);
+ 150   1        send_char(0x22);        // 0x22: "
+ 151   1        send_char(0x0D);      
+ 152   1        send_char(0x0A);
+ 153   1        delay_ms(200);          // Doi dau >
+ 154   1        send_str(sms);
+ 155   1        send_char(0x1A);        // Ctrl + Z de gui tin nhan
+ 156   1        delay_ms(300);          // Delay 1s doi SIM gui tin nhan
+ 157   1        rst_state();
+ 158   1      } 
+ 159          void hang_call()
+ 160          {
+ 161   1        send_str("ATH\r\n");
+ 162   1        delay_ms(200);
+ 163   1        rst_state();
+ 164   1      }
+ 165          void do_action()
+ 166          {
+ 167   1        if(buff[pointer]=='B'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='1')
+ 168   1        { 
+ 169   2              r1=1;
+ 170   2              rst_state();
+ 171   2              send_sms("Relay1: ON\r\n");
+ 172   2            
+ 173   2              // LCD Animation
+ 174   2          
+ 175   2              LCD_Clear();
+ 176   2              LCD_Gotoxy(0,0);
+ 177   2              LCD_Puts("1 new task");
+ 178   2              delay_ms(100);
+C51 COMPILER V9.60.0.0   MAIN                                                              06/12/2022 02:02:00 PAGE 4   
+
+ 179   2              LCD_Clear();
+ 180   2              LCD_Gotoxy(0,0);
+ 181   2              LCD_Puts("1 new task.");
+ 182   2              delay_ms(500);
+ 183   2              LCD_Clear();
+ 184   2              LCD_Gotoxy(0,0);
+ 185   2              LCD_Puts("1 new task..");
+ 186   2              delay_ms(500);
+ 187   2              LCD_Clear();
+ 188   2              LCD_Gotoxy(0,0);
+ 189   2              LCD_Puts("1 new task...");
+ 190   2              delay_ms(500);
+ 191   2              LCD_Gotoxy(0,1);
+ 192   2              LCD_Puts("Relay1 is ON");
+ 193   2              delay_ms(2000);
+ 194   2      
+ 195   2        }
+ 196   1        else if(buff[pointer]=='T'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='1') 
+ 197   1        { 
+ 198   2            r1=0;
+ 199   2            rst_state();
+ 200   2            send_sms("Relay1: OFF\r\n");
+ 201   2            
+ 202   2            LCD_Clear();
+ 203   2            LCD_Gotoxy(0,0);
+ 204   2            LCD_Puts("1 new task");
+ 205   2            delay_ms(100);
+ 206   2            LCD_Clear();
+ 207   2            LCD_Gotoxy(0,0);
+ 208   2            LCD_Puts("1 new task.");
+ 209   2            delay_ms(500);
+ 210   2            LCD_Clear();
+ 211   2            LCD_Gotoxy(0,0);
+ 212   2            LCD_Puts("1 new task..");
+ 213   2            delay_ms(500);
+ 214   2            LCD_Clear();
+ 215   2            LCD_Gotoxy(0,0);
+ 216   2            LCD_Puts("1 new task...");
+ 217   2            delay_ms(500);
+ 218   2            LCD_Gotoxy(0,1);
+ 219   2            LCD_Puts("Relay1 is OFF");
+ 220   2            delay_ms(2000);
+ 221   2        } 
+ 222   1        else if(buff[pointer]=='B'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='2')
+ 223   1        { 
+ 224   2              r2=1;
+ 225   2              rst_state();
+ 226   2              send_sms("Relay2: ON\r\n");
+ 227   2            
+ 228   2              LCD_Clear();
+ 229   2              LCD_Gotoxy(0,0);
+ 230   2              LCD_Puts("1 new task");
+ 231   2              delay_ms(100);
+ 232   2              LCD_Clear();
+ 233   2              LCD_Gotoxy(0,0);
+ 234   2              LCD_Puts("1 new task.");
+ 235   2              delay_ms(500);
+ 236   2              LCD_Clear();
+ 237   2              LCD_Gotoxy(0,0);
+ 238   2              LCD_Puts("1 new task..");
+ 239   2              delay_ms(500);
+ 240   2              LCD_Clear();
+C51 COMPILER V9.60.0.0   MAIN                                                              06/12/2022 02:02:00 PAGE 5   
+
+ 241   2              LCD_Gotoxy(0,0);
+ 242   2              LCD_Puts("1 new task...");
+ 243   2              delay_ms(500);
+ 244   2              LCD_Gotoxy(0,1);
+ 245   2              LCD_Puts("Relay2 is ON");
+ 246   2              delay_ms(2000);
+ 247   2        }
+ 248   1        else if(buff[pointer]=='T'&&buff[pointer+1]=='a'&&buff[pointer+2]=='t'&&buff[pointer+3]=='2')
+ 249   1        {
+ 250   2              r2=0;
+ 251   2              rst_state();
+ 252   2              send_sms("Relay2: OFF\r\n");
+ 253   2            
+ 254   2              LCD_Clear();
+ 255   2              LCD_Gotoxy(0,0);
+ 256   2              LCD_Puts("1 new task");
+ 257   2              delay_ms(100);
+ 258   2              LCD_Clear();
+ 259   2              LCD_Gotoxy(0,0);
+ 260   2              LCD_Puts("1 new task.");
+ 261   2              delay_ms(500);
+ 262   2              LCD_Clear();
+ 263   2              LCD_Gotoxy(0,0);
+ 264   2              LCD_Puts("1 new task..");
+ 265   2              delay_ms(500);
+ 266   2              LCD_Clear();
+ 267   2              LCD_Gotoxy(0,0);
+ 268   2              LCD_Puts("1 new task...");
+ 269   2              delay_ms(500);
+ 270   2              LCD_Gotoxy(0,1);
+ 271   2              LCD_Puts("Relay2 is OFF");
+ 272   2              delay_ms(2000);
+ 273   2        }
+ 274   1        else send_sms("Syntax Error!");   
+ 275   1      }
+ 276          void extract_sms()
+ 277          {
+ 278   1        int i=0;
+ 279   1        pointer=0;
+ 280   1        while(1)
+ 281   1        {
+ 282   2          if(buff[pointer]=='\r'||buff[pointer]=='\n')  // Loai bo \n \r truoc chuoi buffer luu gia tri nhan uart
+ 283   2          {
+ 284   3            pointer++;
+ 285   3          }
+ 286   2          else
+ 287   2            break;                                      // +CMT: "+84967992298","","21/12/28,01:35:03+28"
+ 288   2                                                        // Bat1
+ 289   2        }
+ 290   1                                                        // Phan hoi tu sim co dang:
+ 291   1        while(buff[pointer]!='"')                       
+ 292   1        {                       
+ 293   2          pointer++;
+ 294   2        }
+ 295   1        pointer=pointer+1;                              // i<12 : sdd 10 so, i<=12: 11 so
+ 296   1        for(i=0;i<12;i++)
+ 297   1        {
+ 298   2          number[i]=buff[pointer];
+ 299   2          pointer++;
+ 300   2        }
+ 301   1        //pointer =0;                     
+ 302   1        while(buff[pointer]!='\n')      
+C51 COMPILER V9.60.0.0   MAIN                                                              06/12/2022 02:02:00 PAGE 6   
+
+ 303   1        {       
+ 304   2          pointer++;    
+ 305   2        }                                               //  #CR#LF+CMT: "+84967992298","","21/12/28,23:57:16+28"#CR#LFtat1#CR#LF
+ 306   1          pointer=pointer+1;
+ 307   1      }
+ 308          void ISR_UART(void) interrupt 4
+ 309          {
+ 310   1        if(RI!=0)                 // Co RI = 1
+ 311   1        {
+ 312   2          EA = 0;                 // Khong co ngat nao duoc dap ung nua
+ 313   2          buff[pointer] = SBUF;   // Copy SBUF(received value) to buffer 
+ 314   2          pointer++;              // Tang con tro len
+ 315   2          status_flag = 1;        // Flag for new uart arrival 
+ 316   2          RI = 0;                 // Set RI = 0 de nhan byte du lieu tiep theo
+ 317   2          EA = 1;                 // Tat ca moi ngat deu dc bat lai
+ 318   2        }
+ 319   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1643    ----
+   CONSTANT SIZE    =    510    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      9       3
+   IDATA SIZE       =    115    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

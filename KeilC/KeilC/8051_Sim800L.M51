@@ -1,0 +1,408 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/30/2021  01:16:56  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE main.obj, uartmode1.obj TO 8051_Sim800L RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  main.obj (MAIN)
+  uartmode1.obj (UARTMODE1)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?CLDPTR)
+  C:\KEIL\C51\LIB\C51S.LIB (STRLEN)
+  C:\KEIL\C51\LIB\C51S.LIB (STRSTR)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?MEMSET)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  8051_Sim800L (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000CH     UNIT         _DATA_GROUP_
+            DATA    0014H     0006H     UNIT         ?DT?MAIN
+            IDATA   001AH     0073H     UNIT         ?ID?MAIN
+            IDATA   008DH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0020H                  *** GAP ***
+            CODE    0023H     0003H     ABSOLUTE     
+                    0026H     07DAH                  *** GAP ***
+            CODE    0800H     00DBH     UNIT         ?PR?DO_ACTION?MAIN
+            CODE    08DBH     00CDH     UNIT         ?CO?MAIN
+            CODE    09A8H     00A3H     UNIT         ?PR?MAIN?MAIN
+            CODE    0A4BH     008CH     UNIT         ?C_C51STARTUP
+            CODE    0AD7H     008AH     UNIT         ?PR?EXTRACT_SMS?MAIN
+            CODE    0B61H     0082H     UNIT         ?PR?_STRSTR?STRSTR
+            CODE    0BE3H     0075H     UNIT         ?PR?GSM_INIT?MAIN
+            CODE    0C58H     0064H     UNIT         ?PR?_SEND_SMS?MAIN
+            CODE    0CBCH     0045H     UNIT         ?C?LIB_CODE
+            CODE    0D01H     0030H     UNIT         ?PR?ISR_UART?MAIN
+            CODE    0D31H     0025H     UNIT         ?PR?_SEND_STR?UARTMODE1
+            CODE    0D56H     0024H     UNIT         ?PR?_DELAY_MS?MAIN
+            CODE    0D7AH     0015H     UNIT         ?PR?_STRLEN?STRLEN
+            CODE    0D8FH     0013H     UNIT         ?PR?HANG_CALL?MAIN
+            CODE    0DA2H     000CH     UNIT         ?PR?UART_INIT?UARTMODE1
+            CODE    0DAEH     0009H     UNIT         ?C_INITSEG
+            CODE    0DB7H     0008H     UNIT         ?PR?_SEND_CHAR?UARTMODE1
+            CODE    0DBFH     0005H     UNIT         ?PR?EXT_INT_INIT?UARTMODE1
+
+
+
+OVERLAY MAP OF MODULE:   8051_Sim800L (MAIN)
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/30/2021  01:16:56  PAGE 2
+
+
+
+
+SEGMENT                              DATA_GROUP 
+  +--> CALLED SEGMENT              START    LENGTH
+--------------------------------------------------
+?C_C51STARTUP                      -----    -----
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN                      -----    -----
+  +--> ?PR?UART_INIT?UARTMODE1
+  +--> ?PR?EXT_INT_INIT?UARTMODE1
+  +--> ?PR?GSM_INIT?MAIN
+  +--> ?PR?_DELAY_MS?MAIN
+  +--> ?CO?MAIN
+  +--> ?PR?_STRSTR?STRSTR
+  +--> ?PR?EXTRACT_SMS?MAIN
+  +--> ?PR?DO_ACTION?MAIN
+  +--> ?PR?HANG_CALL?MAIN
+  +--> ?PR?_STRLEN?STRLEN
+
+?PR?GSM_INIT?MAIN                  -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?_SEND_STR?UARTMODE1
+  +--> ?PR?_DELAY_MS?MAIN
+  +--> ?PR?_STRLEN?STRLEN
+  +--> ?PR?_STRSTR?STRSTR
+  +--> ?PR?_SEND_SMS?MAIN
+
+?PR?_SEND_STR?UARTMODE1            000BH    0003H
+  +--> ?PR?_SEND_CHAR?UARTMODE1
+
+?PR?_STRSTR?STRSTR                 0008H    000CH
+
+?PR?_SEND_SMS?MAIN                 0008H    0003H
+  +--> ?CO?MAIN
+  +--> ?PR?_SEND_STR?UARTMODE1
+  +--> ?PR?_SEND_CHAR?UARTMODE1
+  +--> ?PR?_DELAY_MS?MAIN
+  +--> ?PR?_STRLEN?STRLEN
+
+?PR?DO_ACTION?MAIN                 -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?_SEND_SMS?MAIN
+
+?PR?HANG_CALL?MAIN                 -----    -----
+  +--> ?PR?_DELAY_MS?MAIN
+  +--> ?CO?MAIN
+  +--> ?PR?_SEND_STR?UARTMODE1
+
+?C_INITSEG                         -----    -----
+  +--> ?CO?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  8051_Sim800L (MAIN)
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/30/2021  01:16:56  PAGE 3
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  D:0014H         PUBLIC        pointer
+  B:00A8H.7       PUBLIC        EA
+  C:0D01H         PUBLIC        ISR_UART
+  I:001AH         PUBLIC        number
+  B:0098H.0       PUBLIC        RI
+  C:0D8FH         PUBLIC        hang_call
+  D:0016H         PUBLIC        status_flag
+  I:0029H         PUBLIC        buff
+  C:09A8H         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  C:0AD7H         PUBLIC        extract_sms
+  C:0800H         PUBLIC        do_action
+  C:0BE3H         PUBLIC        gsm_Init
+  B:00A0H.1       PUBLIC        relay1
+  B:00A0H.0       PUBLIC        relay2
+  C:0D5AH         PUBLIC        _delay_ms
+  C:0C58H         PUBLIC        _send_sms
+  D:0017H         PUBLIC        control_number
+  -------         PROC          MAIN
+  C:09A8H         LINE#         26
+  C:09A8H         LINE#         27
+  C:09A8H         LINE#         28
+  C:09ACH         LINE#         29
+  C:09B1H         LINE#         30
+  C:09B4H         LINE#         31
+  C:09B7H         LINE#         32
+  C:09BAH         LINE#         33
+  C:09BAH         LINE#         34
+  C:09BAH         LINE#         35
+  C:09BFH         LINE#         36
+  C:09BFH         LINE#         37
+  C:09C6H         LINE#         38
+  C:09DDH         LINE#         39
+  C:09DDH         LINE#         40
+  C:09E0H         LINE#         41
+  C:09E7H         LINE#         42
+  C:09FDH         LINE#         43
+  C:09FDH         LINE#         44
+  C:0A00H         LINE#         45
+  C:0A00H         LINE#         47
+  C:0A00H         LINE#         48
+  C:0A17H         LINE#         49
+  C:0A17H         LINE#         50
+  C:0A1AH         LINE#         51
+  C:0A1AH         LINE#         54
+  C:0A1FH         LINE#         55
+  C:0A21H         LINE#         56
+  C:0A34H         LINE#         58
+  C:0A48H         LINE#         59
+  C:0A48H         LINE#         60
+  -------         ENDPROC       MAIN
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/30/2021  01:16:56  PAGE 4
+
+
+  -------         PROC          EXTRACT_SMS
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0AD7H         LINE#         62
+  C:0AD7H         LINE#         63
+  C:0AD7H         LINE#         64
+  C:0ADAH         LINE#         65
+  C:0ADEH         LINE#         66
+  C:0ADEH         LINE#         67
+  C:0ADEH         LINE#         68
+  C:0AF3H         LINE#         69
+  C:0AF3H         LINE#         70
+  C:0AFBH         LINE#         71
+  C:0AFDH         LINE#         73
+  C:0AFDH         LINE#         75
+  C:0AFDH         LINE#         77
+  C:0B08H         LINE#         78
+  C:0B08H         LINE#         79
+  C:0B10H         LINE#         80
+  C:0B12H         LINE#         81
+  C:0B1AH         LINE#         82
+  C:0B1DH         LINE#         83
+  C:0B1DH         LINE#         84
+  C:0B2BH         LINE#         85
+  C:0B33H         LINE#         86
+  C:0B3EH         LINE#         87
+  C:0B43H         LINE#         88
+  C:0B4EH         LINE#         89
+  C:0B4EH         LINE#         90
+  C:0B56H         LINE#         91
+  C:0B58H         LINE#         92
+  C:0B60H         LINE#         102
+  -------         ENDPROC       EXTRACT_SMS
+  C:0D56H         SYMBOL        L?0060
+  -------         PROC          L?0059
+  -------         ENDPROC       L?0059
+  C:0D56H         SYMBOL        L?0060
+  -------         PROC          _DELAY_MS
+  D:0006H         SYMBOL        time
+  -------         DO            
+  D:0004H         SYMBOL        i
+  D:0002H         SYMBOL        j
+  -------         ENDDO         
+  C:0D5AH         LINE#         103
+  C:0D5AH         LINE#         104
+  C:0D5AH         LINE#         106
+  C:0D64H         LINE#         107
+  C:0D79H         LINE#         108
+  -------         ENDPROC       _DELAY_MS
+  -------         PROC          GSM_INIT
+  C:0BE3H         LINE#         110
+  C:0BE3H         LINE#         111
+  C:0BE3H         LINE#         112
+  C:0BE3H         LINE#         113
+  C:0BE3H         LINE#         114
+  C:0BECH         LINE#         117
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/30/2021  01:16:56  PAGE 5
+
+
+  C:0BEFH         LINE#         119
+  C:0BF8H         LINE#         120
+  C:0BFBH         LINE#         122
+  C:0C04H         LINE#         123
+  C:0C07H         LINE#         125
+  C:0C10H         LINE#         126
+  C:0C13H         LINE#         127
+  C:0C27H         LINE#         128
+  C:0C30H         LINE#         129
+  C:0C37H         LINE#         131
+  C:0C4EH         LINE#         132
+  C:0C4EH         LINE#         133
+  C:0C57H         LINE#         134
+  C:0C57H         LINE#         135
+  C:0C57H         LINE#         136
+  C:0C57H         LINE#         137
+  -------         ENDPROC       GSM_INIT
+  -------         PROC          _SEND_SMS
+  D:0008H         SYMBOL        sms
+  C:0C58H         LINE#         138
+  C:0C5EH         LINE#         139
+  C:0C5EH         LINE#         140
+  C:0C67H         LINE#         141
+  C:0C6CH         LINE#         142
+  C:0C75H         LINE#         143
+  C:0C7AH         LINE#         144
+  C:0C7FH         LINE#         145
+  C:0C84H         LINE#         146
+  C:0C8BH         LINE#         147
+  C:0C94H         LINE#         148
+  C:0C99H         LINE#         149
+  C:0CA0H         LINE#         150
+  C:0CB4H         LINE#         151
+  C:0CB9H         LINE#         152
+  C:0CBBH         LINE#         153
+  -------         ENDPROC       _SEND_SMS
+  -------         PROC          HANG_CALL
+  C:0D8FH         LINE#         165
+  C:0D8FH         LINE#         166
+  C:0D8FH         LINE#         167
+  C:0D92H         LINE#         168
+  C:0D9BH         LINE#         169
+  -------         ENDPROC       HANG_CALL
+  -------         PROC          DO_ACTION
+  C:0800H         LINE#         171
+  C:0800H         LINE#         172
+  C:0800H         LINE#         173
+  C:082AH         LINE#         174
+  C:082AH         LINE#         175
+  C:082CH         LINE#         176
+  C:0832H         LINE#         177
+  C:0835H         LINE#         178
+  C:085FH         LINE#         179
+  C:085FH         LINE#         180
+  C:0861H         LINE#         181
+  C:0867H         LINE#         182
+  C:0869H         LINE#         183
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/30/2021  01:16:56  PAGE 6
+
+
+  C:0893H         LINE#         184
+  C:0893H         LINE#         185
+  C:0895H         LINE#         186
+  C:089BH         LINE#         187
+  C:089DH         LINE#         188
+  C:08C7H         LINE#         189
+  C:08C7H         LINE#         190
+  C:08C9H         LINE#         191
+  C:08CFH         LINE#         192
+  C:08D1H         LINE#         193
+  C:08DAH         LINE#         194
+  -------         ENDPROC       DO_ACTION
+  -------         PROC          ISR_UART
+  C:0D01H         LINE#         199
+  C:0D0CH         LINE#         201
+  C:0D0FH         LINE#         202
+  C:0D0FH         LINE#         203
+  C:0D11H         LINE#         204
+  C:0D19H         LINE#         205
+  C:0D21H         LINE#         206
+  C:0D24H         LINE#         207
+  C:0D26H         LINE#         208
+  C:0D28H         LINE#         209
+  C:0D28H         LINE#         210
+  -------         ENDPROC       ISR_UART
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        UARTMODE1
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  B:00A8H.7       PUBLIC        EA
+  B:00A8H.4       PUBLIC        ES
+  B:0098H.1       PUBLIC        TI
+  C:0DB7H         PUBLIC        _send_char
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  C:0DA2H         PUBLIC        uart_Init
+  D:0089H         PUBLIC        TMOD
+  D:008DH         PUBLIC        TH1
+  C:0DBFH         PUBLIC        Ext_int_Init
+  B:0088H.6       PUBLIC        TR1
+  C:0D31H         PUBLIC        _send_str
+  -------         PROC          EXT_INT_INIT
+  C:0DBFH         LINE#         3
+  C:0DBFH         LINE#         4
+  C:0DBFH         LINE#         5
+  C:0DC1H         LINE#         6
+  C:0DC3H         LINE#         7
+  -------         ENDPROC       EXT_INT_INIT
+  -------         PROC          UART_INIT
+  C:0DA2H         LINE#         8
+  C:0DA2H         LINE#         9
+  C:0DA2H         LINE#         10
+  C:0DA5H         LINE#         11
+  C:0DA8H         LINE#         12
+  C:0DABH         LINE#         13
+  C:0DADH         LINE#         15
+  -------         ENDPROC       UART_INIT
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/30/2021  01:16:56  PAGE 7
+
+
+  -------         PROC          _SEND_CHAR
+  D:0007H         SYMBOL        chr
+  C:0DB7H         LINE#         16
+  C:0DB7H         LINE#         17
+  C:0DB7H         LINE#         18
+  C:0DB9H         LINE#         19
+  C:0DBCH         LINE#         20
+  C:0DBEH         LINE#         21
+  -------         ENDPROC       _SEND_CHAR
+  -------         PROC          _SEND_STR
+  D:000BH         SYMBOL        str
+  C:0D31H         LINE#         22
+  C:0D37H         LINE#         23
+  C:0D37H         LINE#         24
+  C:0D42H         LINE#         25
+  C:0D42H         LINE#         26
+  C:0D53H         LINE#         27
+  C:0D55H         LINE#         29
+  -------         ENDPROC       _SEND_STR
+  -------         ENDMOD        UARTMODE1
+
+  -------         MODULE        ?C?CLDPTR
+  C:0CBCH         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+
+  -------         MODULE        STRLEN
+  C:0D7AH         PUBLIC        _STRLEN
+  -------         ENDMOD        STRLEN
+
+  -------         MODULE        STRSTR
+  D:0008H         PUBLIC        ?_strstr?BYTE
+  C:0B61H         PUBLIC        _strstr
+  -------         ENDMOD        STRSTR
+
+  -------         MODULE        ?C?MEMSET
+  C:0CD5H         PUBLIC        ?C?MEMSET
+  -------         ENDMOD        ?C?MEMSET
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 045EH BYTE (54%) *
+******************************************************************************
+
+Program Size: data=142.0 xdata=0 code=1482
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

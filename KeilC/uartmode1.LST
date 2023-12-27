@@ -1,0 +1,64 @@
+C51 COMPILER V9.60.0.0   UARTMODE1                                                         06/12/2022 01:52:00 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE UARTMODE1
+OBJECT MODULE PLACED IN uartmode1.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE uartmode1.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <main.h>
+   2          #include <uartmode1.h>
+   3          void Ext_int_Init()       
+   4          {
+   5   1        EA = 1;               // Enable Global interrupt 
+   6   1        ES = 1;               // Enable Ext. interrupt0     
+   7   1      }
+   8          void uart_Init()
+   9          {
+  10   1        SCON = 0x50;          // SCON: mode 1, 8bit-uart, enable receive
+  11   1        TMOD = 0x20;          // TMOD: timer 1, mode 2, 8bit, tu nap lai
+  12   1        TH1 = 0xFD;           // TH1: Thach Anh 11.0596Mhz, baud 9600           
+  13   1        TR1 = 1;              // TR1: timer 1 run
+  14   1            
+  15   1      }
+  16          void send_char(unsigned char chr)
+  17          {
+  18   1        SBUF = chr;           // TI: Tranfer Interrupt
+  19   1        while(TI==0);         // TI flag = 0 tuc la dang truyen du lieu, cho cho chuyen xong
+  20   1        TI=0;                 // TI dc bat len 1 khi bit cuoi cung dc truyen di
+  21   1      }
+  22          void send_str(unsigned char *str)
+  23          {
+  24   1        while(*str)
+  25   1        {
+  26   2          send_char(*str++);
+  27   2        }
+  28   1      
+  29   1      }
+  30          /*
+  31          char data_ready()           // Co RI = 0: chua nhan xong du lieu : Receiver Interrupt
+  32          {                           // Co RI = 1: Da nhan xong du lieu
+  33            return RI;
+  34          }
+  35          
+  36          char read_char()
+  37          {
+  38            RI = 0;
+  39            return SBUF;
+  40          }
+  41          */      
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     62    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
